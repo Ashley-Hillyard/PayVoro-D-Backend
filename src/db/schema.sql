@@ -1,0 +1,42 @@
+CREATE TABLE IF NOT EXISTS staff_users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT UNIQUE NOT NULL,
+  pin_hash TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'staff',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS api_keys (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  label TEXT NOT NULL,
+  api_key TEXT UNIQUE NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active',
+  last_used_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  revoked_at DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS pos_systems (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  system_id TEXT UNIQUE NOT NULL,
+  display_name TEXT NOT NULL,
+  location TEXT,
+  status TEXT NOT NULL DEFAULT 'offline',
+  current_api_key_id INTEGER,
+  last_ping_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(current_api_key_id) REFERENCES api_keys(id)
+);
+
+DROP TABLE IF EXISTS system_pings;
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  action TEXT NOT NULL,
+  actor TEXT,
+  target_type TEXT,
+  target_id TEXT,
+  details_json TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
